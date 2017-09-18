@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML5 player</title>
+	<meta charset="utf-8">
+<style type="text/css">
+html{margin:0;}
+canvas{
+	position: absolute;
+}
+.frame{
+	width: 800px;
+	margin:0px auto;
+}
+/*此处frame解决了居中问题*/
+.player{
+	height: 700px;
+	width: 800px;
+	position: relative;
+}
+.myvideo,.words{
+	position: absolute;
+}
+.myvideo{
+	width: 800px;
+	height: 450px;
+    top:0px;
+    z-index: 1;
+    left: 0;
+    background-color: #4F4F4F;
+}
+.words{
+	width: 100px;
+	height: 100px;
+	top: 100px;
+	left: 0;
+	z-index: 2;
+}
+.send{
+	position: absolute;
+	top: 500px;
+	left: 150px;
+	z-index: 4;
+}
+.danmu{
+	position: absolute;
+	width: 150px;
+	height: 100px;
+    z-index: 10;
+    top: 100px;
+    left: 800px;
+/*    border: 1px solid white;*/
+    animation: myfirst 8s;
+    -moz-animation: myfirst 8s;	/* Firefox */
+    -webkit-animation: myfirst 8s;	/* Safari 和 Chrome */
+    -o-animation: myfirst 8s;	/* Opera */
+    animation-timing-function: linear;
+    animation-fill-mode:forwards;
+}
+@keyframes myfirst
+{
+from {left:800px;}
+to {left:-250px;}
+}
+
+@-moz-keyframes myfirst /* Firefox */
+{
+from {left:800px;}
+to {left:-250px;}
+}
+
+@-webkit-keyframes myfirst /* Safari 和 Chrome */
+{
+from {left:800px;}
+to {left:-250px;}
+}
+
+@-o-keyframes myfirst /* Opera */
+{
+from {left:800px;}
+to {left:-250px;}
+}
+
+.control{
+	width: 800px;
+	position: absolute;
+    top: 450px;
+    height: 40px;
+    background-color: #808080;
+}
+.play,.pause{
+	width: 25px;
+	height: 25px;
+	position: relative;
+	top: 7.5px;
+	left: 20px;
+	display: inline-block;
+}
+.play:before{
+    border: 12.5px solid transparent;
+    border-left: 12.5px solid #000;
+    content: "";
+    position: absolute;
+    left:6.25px;
+}
+.pause:before{
+	height: 20px;
+	width: 5px;
+    content: "";
+    background-color: #000;
+    position: absolute;
+    right:6px;
+    top:2.5px;
+}
+.pause:after{
+	height: 20px;
+	width: 5px;
+    content: "";
+    background-color: #000;
+    position: absolute;
+    left:6px;
+    top:2.5px;
+}
+.fullscreen{
+	height: 32px;
+	width: 32px;
+	position: absolute;
+	right: 20px;
+	top: 4px;
+	background:url('media/fullscreen.png') no-repeat center;
+	display: inline-block;
+}
+.progress{
+	position: absolute;
+	left:70px;
+	top:15px;
+	width: 493px;
+	height: 10px;
+    background:url('media/statbar.png') no-repeat 0px -29px;
+}
+.redline{
+	position: absolute;
+	left:0px;
+	top:0px;
+	width: 0px;
+	height: 10px;
+	background:url('media/statbar.png') no-repeat 0px -65px;
+}
+.point{
+	position: absolute;
+	left:-5px;
+	top:-5px;
+	width:20px;
+	height:20px;
+	background:url('media/iconall.png') no-repeat 0px -250px;
+}
+.time{
+	font-size: 15px;
+	width: 100px;
+	position: absolute;
+	height: 40px;
+	line-height: 40px;
+	top:0px;
+	right:120px;
+}
+.start,.end{
+	display: inline-block;
+}
+.volume{
+    width: 40px;
+    height: 120px;
+    position: absolute;
+    right:65px;
+    bottom: 0px;
+    z-index: 11;
+}
+.volume-icon{
+	position: absolute;
+	bottom: 0px;
+	width: 40px;
+	height: 40px;
+	background: url(media/volume_on.png) no-repeat center;
+ }
+.volume-line{
+	display: none;
+	width: 12px;
+	height: 80px;
+	position: absolute;
+	top: 5px;
+	left: 10px;
+	background-color:#363636;
+	border-radius: 6px;
+}
+.volume-inline{
+	width: 6px;
+    height: 70px;
+    position: absolute;
+    bottom: 5px;
+    left: 3px;
+    background-color:#FF4500;
+    border-radius: 3px;
+}
+.bar{
+	height: 5px;
+	width: 10px;
+	position: absolute;
+	top: 5px;
+	left:1px;
+	background-color:red;
+}
+
+</style>
+</head>
+<body>
+<div class="frame">
+<div class="player">
+	<video class="myvideo" src="media/play.mp4"></video>
+	<div class="control">
+		<div class="play" onclick="playV();"></div>
+		<div class="progress">
+			<div class="redline"></div>
+            <div class="point"></div>
+		</div>
+		<div class="time">
+            <div class="start">00:00 /</div>
+            <div class="end">00:00</div>
+		</div>
+		<div class="volume">
+			<div class="volume-icon"></div>
+			<div class="volume-line">
+				<div class="volume-inline"></div>
+			    <div class="bar"></div>
+			</div>
+		</div>
+		<div class="fullscreen" onclick="fullScreen();"></div>
+	</div>
+	<canvas class="words"></canvas>
+	<form class="send" onsubmit="return false;" style="position: absolute;left: 0px;">
+	<input type="text" class="sendtext" style="height: 20px;width: 700px;line-height: 20px;"></input>
+	<input type="button" class="submit" value="发送" style="height: 30px;width: 80px" onclick="send1()"></input>
+	</form>
+ </div>
+</div>
+</body>
+<script type="text/javascript">
+function $(s){
+	return document.querySelector(s);
+}
+var player=$('.player');
+var mytext=$('.words');
+var text=mytext.getContext('2d');
+
+var sendtext=$('.sendtext');
+document.addEventListener('keydown',function(e){
+if(e.keyCode=='13'){send1();}
+},false);
+function send1(){
+    var value=sendtext.value;
+	if(value==null){}
+    else{
+
+    	var danmu = document.createElement("canvas");
+    	player.appendChild(danmu);
+    	danmu.className='danmu';
+    	var ctx=danmu.getContext('2d');
+    	ctx.textBaseline= "top" ;
+    	ctx.textAlign = "left";
+    	// var width=ctx.measureText(value);
+    	ctx.font="35px 微软雅黑";
+    	ctx.fillStyle = '#fff';
+    	ctx.fillText(value,0,0);
+    	sendtext.value='';
+    }		
+}
+
+var play=$('.play');
+var video=$('.myvideo');
+var player=$('.player');
+var control=$('.control');
+
+function playV(){
+	if(play.className=='play'){
+        play.className='pause';
+        video.play();
+        end.innerHTML=secondToMinute(video.duration);
+	}
+	else{
+		video.pause();
+      play.className="play";
+	}
+}
+
+var progress=$('.progress');
+var redline=$('.redline');
+var point=$('.point');
+progress.onmousedown=function(e){
+	   //offsetLeft属性很重要
+         var left=player.offsetLeft+70;
+         redline.style.width=e.clientX-left+'px';
+         point.style.left=e.clientX-left-5+'px';
+         video.currentTime=(e.clientX-left)/493*video.duration;
+	};
+var start=$('.start');
+var end=$('.end');
+
+video.addEventListener('timeupdate',function(){
+    var len=(video.currentTime/video.duration)*493;
+	redline.style.width=len+"px";
+	point.style.left=len-5+"px";
+    start.innerHTML=secondToMinute(video.currentTime)+' /';
+},false);
+
+function secondToMinute(s){
+     var m=String(parseInt(s/60));
+     var s=String(parseInt(s%60));
+     if(m<10){m='0'+m;}
+     if(s<10){s='0'+s;}
+     return m+':'+s ;
+}
+
+function fullScreen()  
+{      
+
+        //W3C   
+        if (video.requestFullscreen) {  
+            video.requestFullscreen();  
+        }  
+            //FireFox   
+        else if (video.mozRequestFullScreen) {  
+            video.mozRequestFullScreen();  
+        }  
+            //Chrome等   
+        else if (video.webkitRequestFullScreen) {  
+            video.webkitRequestFullScreen();  
+        }  
+            //IE11   
+        else if (video.msRequestFullscreen) {  
+            video.msRequestFullscreen();  
+        }  
+}  
+var volume=$('.volume');
+var volumeLine=$('.volume-line');
+var volumeInline=$('.volume-inline');
+
+volume.onmouseover = function(){
+	volumeLine.style.display="block";
+}
+volume.onmouseout = function(){
+	volumeLine.style.display="none";
+}
+var bar = $('.bar');
+bar.onmousedown = function(e){
+     //volumeInline.style.height=(455-e.clientY)+'px';
+     //v=volumeInline.style.height;
+     // video.volume= v/70.0 ;
+     var thisY = e.clientY;
+     var top=control.offsetTop;
+     console.log(top);
+     document.onmousemove = function(e){
+     	var to=Math.min(70,Math.max(-2,70+(thisY-e.clientY)));
+         volumeInline.style.height=to+'px';
+        var bo=Math.min(65,Math.max(-2,5-(thisY-e.clientY)));
+         bar.style.top=bo+'px';
+     }
+     document.onmouseup = function(){document.onmousemove=null;}
+}
+
+var volumeIcon=$('.volume-icon');
+volumeIcon.onclick=function(){
+	if(volumeIcon.style.backgroundImage=="url(media/volume_on.png)"){
+		volumeIcon.style.backgroundImage="url(media/volume_off.png)";
+        // video.volume=0;
+        volumeInline.style.height=0+'px';
+	}
+	else{
+     volumeIcon.style.backgroundImage="url(media/volume_on.png)";
+      //  video.volume=v/70;
+        volumeInline.style.height=v+'px';   
+	}
+}
+
+</script>
+</html>
